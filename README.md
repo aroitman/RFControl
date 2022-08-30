@@ -1,5 +1,7 @@
 # RFControl
 
+![](rfcontrol.svg)
+
 A Python interface for our RF Power Supply and our RF Switch.
 
 ## Description of Files
