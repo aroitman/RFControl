@@ -1,11 +1,11 @@
 import ctypes
-import os
 
 
 # Define switch class to interface with the dll
 class RFSwitch:
     def __init__(self, PortNumber, COMNumber):
-        self.libpath = os.path.abspath("COM-HVAMX4ED.dll")
+        #self.libpath = os.path.abspath("COM-HVAMX4ED.dll")
+        self.libpath = "C:/ControlSoftware/COM-HVAMX4ED_1-01/x64/COM-HVAMX4ED.dll"
         self.RFSwitch = ctypes.cdll.LoadLibrary(self.libpath)  # load library
         self.PortNumber = PortNumber  # port used for RF switch, usually 0
         self.COMNumber = COMNumber  # COM port number, which depends on where switch is connected.
@@ -54,17 +54,40 @@ class RFSwitch:
             config_name_dict[num] = name
         return (active_nums, valid_nums, config_name_dict)
 
-    def setup(self, config_number=None):
-        if config_number is None:
-            print(self.get_config_list()[-1])
-            while True:
-                try:
-                    config_number = int(input("Select a config number from the dictionary above:"))
-                    break
-                except ValueError:
-                    print("Invalid input. Try again")
-        print("Loading config number", config_number, "...")
-        self.load_current_config(config_number)
+    def get_oscillator_frequency(self):
+        # get oscillator frequency in MHz
+        period = ctypes.pointer(ctypes.c_int(0))
+        self.RFSwitch.COM_HVAMX4ED_GetOscillatorPeriod(self.PortNumber, period)
+        # convert period to proper format and then to frequency
+        period = period.contents.value + 2
+        freq = 100 / period
+        return freq
+
+    def set_oscillator_frequency(self, freq):
+        # set oscillator frequency in MHz, and do the other steps in the lablog
+        # convert frequency to period into units of 10 ns
+        period = round(100 / freq)
+        # subtract two for proper input format
+        period_minus_two = period - 2
+        period_minus_two = ctypes.c_int(period_minus_two)
+        self.RFSwitch.COM_HVAMX4ED_SetOscillatorPeriod(self.PortNumber, period_minus_two)
+        # set pulserwidth to be half of period, set it to pulser 0
+        width_minus_two = round(period / 2) - 2
+        width_minus_two = ctypes.c_int(width_minus_two)
+        pulserno = 0
+        self.RFSwitch.COM_HVAMX4ED_SetPulserWidth(self.PortNumber, pulserno, width_minus_two)
+        # set switch trigger and enable config for switch 0.
+        # In hexadecimal, 10 = 0A, 32 = 20
+        self.RFSwitch.COM_HVAMX4ED_SetSwitchTriggerConfig(self.PortNumber, 0, 10)
+        self.RFSwitch.COM_HVAMX4ED_SetSwitchEnableConfig(self.PortNumber, 0, 32)
+        # set switch trigger and enable config for switch 1
+        # In hexadecimal, 42 = 2A, 32 = 20
+        self.RFSwitch.COM_HVAMX4ED_SetSwitchTriggerConfig(self.PortNumber, 1, 42)
+        self.RFSwitch.COM_HVAMX4ED_SetSwitchEnableConfig(self.PortNumber, 1, 32)
+
+        return self.get_oscillator_frequency()
+
+    def setup(self):
         print("Enabling Controller...")
         self.set_controller_config(7)
         print("Controller state set to", self.get_controller_state())

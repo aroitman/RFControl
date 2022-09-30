@@ -1,0 +1,77 @@
+record(ao, "$(P):$(R):setVoltage") {
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(ao, "$(P):$(R):setCurrent"){
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(ao, "$(P):$(R):setFrequency") {
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(bo, "$(P):$(R):setPSState") {
+    #field(TYPE,"enum")
+    field(SCAN,"Passive")
+    field(ZNAM,"OFF")
+    field(ONAM,"ON")
+}
+record(ao, "$(P):$(R):setSWState") {
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(ao, "$(P):$(R):getVoltage") {
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(ao, "$(P):$(R):getCurrent") {
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(ao, "$(P):$(R):getFrequency") {
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(ao, "$(P):$(R):getVoltageLimit") {
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(ao, "$(P):$(R):getCurrentLimit") {
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(ao, "$(P):$(R):getSWState") {
+    field(PREC,"$(PREC)")
+    field(SCAN,"Passive")
+}
+record(bo, "$(P):$(R):getInterlock") {
+    #field(TYPE, "enum")
+    field(SCAN,"Passive")
+    field(ZNAM,"OFF")
+    field(ONAM,"ON")
+}
+record(bo, "$(P):$(R):getFullRange") {
+    #field(TYPE, "enum")
+    field(SCAN,"Passive")
+    field(ZNAM,"OFF")
+    field(ONAM,"ON")
+}
+record(bo, "$(P):$(R):getPSUState") { 
+    #field(TYPE, "enum")
+    field(SCAN,"Passive")
+    field(ZNAM,"OFF")
+    field(ONAM,"ON")
+}
+record(bo, "$(P):$(R):isRunning") {
+    #field(TYPE, "enum")
+    field(SCAN, ".1 second")
+    field(ZNAM,"NO")
+    field(ONAM,"YES")
+}
+record(bo, "$(P):$(R):isMatching") {
+    #field(TYPE, "enum")
+    field(SCAN, ".1 second")
+    field(ZNAM,"NO")
+    field(ONAM,"YES")
+}
+

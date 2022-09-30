@@ -1,40 +1,43 @@
-from queue import Queue  # manage requests
-from epics import PV  # allows access to EPICS variables
+from queue import Queue
+from epics import PV
+import time
 
 # dummy mode for testing
-mode = "dummy"
+mode = "real"
 if mode == "real":
     import rfps
     import rfswitch
 
 
 class RFBackend:
-    def __init__(self, name, PSPortNumber, PSCOMNumber, SWPortNumber, SWCOMNumber, config_number=2):
+    def __init__(self, name, PSPortNumber, PSCOMNumber, SWPortNumber, SWCOMNumber):
         # initialize ps wrapper
         self.PSPortNumber = PSPortNumber
         self.PSCOMNumber = PSCOMNumber
         self.SWPortNumber = SWPortNumber
         self.SWCOMNumber = SWCOMNumber
-        self.config_number = config_number
         if mode == "real":
             # initialize PS wrapper
             self.rfps = rfps.RFPS(self.PSPortNumber, self.PSCOMNumber)
+            self.rfps.open()
             self.rfps.setup()
 
             # initialize switch wrapper
             self.rfswitch = rfswitch.RFSwitch(self.SWPortNumber, self.SWCOMNumber)
-            self.rfswitch.setup(self.config_number)
+            self.rfswitch.open()
+            self.rfswitch.setup()
 
         # Initialize EPICS set PVs as dictionary
-        self.setPVs = {"V": PV(name + ":setVoltage"), "I": PV(name + ":setCurrent"), "PS": PV(name + ":setPSState"), "SW": PV(name + ":setSWState")}
+        self.setPVs = {"V": PV(name + ":setVoltage"), "I": PV(name + ":setCurrent"), "PS": PV(name + ":setPSState"), "SW": PV(name + ":setSWState"), "Hz": PV(name + ":setFrequency")}
         # set function dictionary to make setting variables easier
-        self.setfunctions = {"V": self.rfps.set_output_voltage, "I": self.rfps.set_output_current, "PS": self.ps_change_state, "SW": self.rfswitch.set_controller_config}
+        if mode == "real":
+            self.setfunctions = {"V": self.rfps.set_output_voltage, "I": self.rfps.set_output_current, "PS": self.ps_change_state, "SW": self.rfswitch.set_controller_config, "Hz": self.rfswitch.set_oscillator_frequency}
         # received and current PV dict to check the epics value with the rf value
-        self.received_setPVs = {"V": None, "I": None, "PS": None, "SW": None}
-        self.current_setPVs = {"V": None, "I": None, "PS": None, "SW": None}
+        self.received_setPVs = {"V": None, "I": None, "PS": None, "SW": None, "Hz": None}
+        self.current_setPVs = {"V": None, "I": None, "PS": None, "SW": None, "Hz": None}
 
         # Initialize EPICS get PVs as dictionary (PVs read from RF switch and ps)
-        self.getPVs = {"V": PV(name + ":getVoltage"), "I": PV(name + ":getCurrent"), "SW": PV(name + ":getSWState"), "Vlim": PV(name + ":getVoltageLimit"), "Ilim": PV(name + ":getCurrentLimit"), "ilock": PV(name + ":getInterlock"), "FR": PV(name + ":getFullRange"), "PS": PV(name + ":getPSUState")}
+        self.getPVs = {"V": PV(name + ":getVoltage"), "I": PV(name + ":getCurrent"), "SW": PV(name + ":getSWState"), "Vlim": PV(name + ":getVoltageLimit"), "Ilim": PV(name + ":getCurrentLimit"), "ilock": PV(name + ":getInterlock"), "FR": PV(name + ":getFullRange"), "PS": PV(name + ":getPSUState"), "Hz": PV(name + ":getFrequency")}
 
         self.epicsRunning = PV(name + ":isRunning")
         self.epicsRunning.put("YES")
@@ -52,41 +55,55 @@ class RFBackend:
         self.setPVs["I"].add_callback(self.setIChanged)
         self.setPVs["PS"].add_callback(self.setPSChanged)
         self.setPVs["SW"].add_callback(self.setSWChanged)
+        self.setPVs["Hz"].add_callback(self.setHzChanged)
 
         # put a read command into the Queue
         self.sendQueue.put("read")
         self.run()
 
     def run(self):
-        while True:
-            if self.sendQueue.qsize() <= self.maxSendBufferLength:
-                self.sendQueue.put("read")
+        try:
+            while True:
+                if self.sendQueue.qsize() <= self.maxSendBufferLength:
+                    self.sendQueue.put("read")
 
-            request = self.sendQueue.get()
-            if request == "read":
-                if mode == "real":
-                    self.read()
+                request = self.sendQueue.get()
+                if request == "read":
+                    if mode == "real":
+                        time.sleep(1)
+                        self.read()
+                    else:
+                        time.sleep(1)
+                        for key in self.getPVs:
+                            self.getPVs[key].put(0)
+                            print(key, self.getPVs[key].get())
                 else:
-                    for key in self.getPVs:
-                        self.getPVs[key].put(0)
-            else:
-                if mode == "real":
-                    self.set_value(request)
-                else:
-                    self.epicsMatches.put("YES")
-                    print("Currently in dummy mode. Set variables changed. Request received:", request)
+                    if mode == "real":
+                        self.set_value(request)
+                    else:
+                        self.epicsMatches.put("YES")
+                        print("Currently in dummy mode. Set variables changed. Request received:", request)
+        except KeyboardInterrupt:
+            self.rfps.shutdown()
+            self.rfps.close()
+            self.rfswitch.shutdown()
+            self.rfswitch.close()
 
     def read(self):
         self.getPVs["V"].put(self.rfps.get_output_voltage(0))
         self.getPVs["I"].put(self.rfps.get_output_current(0))
         self.getPVs["SW"].put(self.rfswitch.get_controller_state())
-        self.getPVs["Vlim"].put(self.get_PSU_set_output_voltage(0)[1])
-        self.getPVs["Ilim"].put(self.get_PSU_set_output_current(0)[1])
-
+        self.getPVs["Vlim"].put(self.rfps.get_PSU_set_output_voltage(0)[1])
+        self.getPVs["Ilim"].put(self.rfps.get_PSU_set_output_current(0)[1])
+        print("oscillator frequency from switch:", self.rfswitch.get_oscillator_frequency())
+        self.getPVs["Hz"].put(self.rfswitch.get_oscillator_frequency())
+        print("epics value for frequency", self.getPVs["Hz"].get())
         # sets following variables to True if and only if results of the rfps functions are (True, True), otherwise, return False.
         self.getPVs["PS"].put(min(self.rfps.get_PSU_enable()))
         self.getPVs["ilock"].put(min(self.rfps.get_interlock_enable()))
         self.getPVs["FR"].put(min(self.rfps.get_PSU_full_range()))
+        for key in self.getPVs:
+            print(key, self.getPVs[key].get())
 
     def setVChanged(self, **kw):
         self.sendQueue.put("V")
@@ -100,6 +117,9 @@ class RFBackend:
     def setSWChanged(self, **kw):
         self.sendQueue.put("SW")
 
+    def setHzChanged(self, **kw):
+        self.sendQueue.put("Hz")
+
     # helper function to change ps state
     def ps_change_state(self, state):
         if state == 1:
@@ -111,7 +131,13 @@ class RFBackend:
 
     # function to safely set variables
     def set_value(self, request):
-        self.received_setPVs[request] = self.setPVs[request].get()
+        if request == "SW":
+            # need to have an integer for the switch state, 0 or 7
+            self.received_setPVs[request] = int(self.setPVs[request].get())
+        else:
+            self.received_setPVs[request] = self.setPVs[request].get()
+
+        # check whether we are connected to the epics server
         if (self.epicsRunning.get() is None) or (self.epicsRunning.get() == 0):
             print("Connection to EPICS server lost")
         result = self.setfunctions[request](self.received_setPVs[request])
@@ -119,9 +145,20 @@ class RFBackend:
             self.current_setPVs[request] = result
             self.epicsMatches.put("YES")
         else:
-            print("RF result differs from EPICS value.")
-            self.epicsMatches.put("NO")
+            # check the case for the oscillation frequency, which is by definition not equal to the EPICS variable
+            if request == "Hz" and result - self.received_setPVs[request] < 0.1:
+                self.current_setPVs[request] = self.received_setPVs[request]
+                self.epicsMatches.put("YES")
+            else:
+                print("RF result differs from EPICS value.")
+                print("result", result, "Epics value", self.received_setPVs[request])
+                self.epicsMatches.put("NO")
 
 
 if __name__ == "__main__":
     rfb = RFBackend("Beamline:RF", 0, 6, 0, 5)
+    #except KeyboardInterrupt:
+     #   rfb.rfps.shutdown()
+      #  rfb.rfps.close()
+       # rfb.rfswitch.shutdown()
+        #rfb.rfswitch.close()
