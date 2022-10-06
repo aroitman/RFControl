@@ -31,7 +31,7 @@ class RFBackend:
         self.setPVs = {"V": PV(name + ":setVoltage"), "I": PV(name + ":setCurrent"), "PS": PV(name + ":setPSState"), "SW": PV(name + ":setSWState"), "Hz": PV(name + ":setFrequency")}
         # set function dictionary to make setting variables easier
         if mode == "real":
-            self.setfunctions = {"V": self.rfps.set_output_voltage, "I": self.rfps.set_output_current, "PS": self.ps_change_state, "SW": self.rfswitch.set_controller_config, "Hz": self.rfswitch.set_oscillator_frequency}
+            self.setfunctions = {"V": self.safe_set_output_voltage, "I": self.rfps.set_output_current, "PS": self.ps_change_state, "SW": self.rfswitch.set_controller_config, "Hz": self.rfswitch.set_oscillator_frequency}
         # received and current PV dict to check the epics value with the rf value
         self.received_setPVs = {"V": None, "I": None, "PS": None, "SW": None, "Hz": None}
         self.current_setPVs = {"V": None, "I": None, "PS": None, "SW": None, "Hz": None}
@@ -129,6 +129,13 @@ class RFBackend:
             self.rfps.shutdown()
             return 0
 
+    # helper function to set voltage safely
+    def safe_set_output_voltage(self, voltage):
+        self.rfswitch.set_controller_config(0)
+        self.rfps.set_output_voltage(voltage)
+        self.rfswitch.set_controller_config(7)
+        return self.rfps.get_output_voltage(0)
+
     # function to safely set variables
     def set_value(self, request):
         if request == "SW":
@@ -140,25 +147,18 @@ class RFBackend:
         # check whether we are connected to the epics server
         if (self.epicsRunning.get() is None) or (self.epicsRunning.get() == 0):
             print("Connection to EPICS server lost")
+        # set values on RF to the values received from EPICS
         result = self.setfunctions[request](self.received_setPVs[request])
-        if result == self.received_setPVs[request]:
+        if result - self.received_setPVs[request] < 0.1:
             self.current_setPVs[request] = result
             self.epicsMatches.put("YES")
         else:
-            # check the case for the oscillation frequency, which is by definition not equal to the EPICS variable
-            if request == "Hz" and result - self.received_setPVs[request] < 0.1:
-                self.current_setPVs[request] = self.received_setPVs[request]
-                self.epicsMatches.put("YES")
-            else:
-                print("RF result differs from EPICS value.")
-                print("result", result, "Epics value", self.received_setPVs[request])
-                self.epicsMatches.put("NO")
+            self.current_setPVs[request] = self.received_setPVs[request]
+            self.epicsMatches.put("YES")
+            print("RF result differs from EPICS value.")
+            print("result", result, "Epics value", self.received_setPVs[request])
+            self.epicsMatches.put("NO")
 
 
 if __name__ == "__main__":
     rfb = RFBackend("Beamline:RF", 0, 6, 0, 5)
-    #except KeyboardInterrupt:
-     #   rfb.rfps.shutdown()
-      #  rfb.rfps.close()
-       # rfb.rfswitch.shutdown()
-        #rfb.rfswitch.close()
