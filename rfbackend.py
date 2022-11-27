@@ -39,6 +39,11 @@ class RFBackend:
         # Initialize EPICS get PVs as dictionary (PVs read from RF switch and ps)
         self.getPVs = {"V": PV(name + ":getVoltage"), "I": PV(name + ":getCurrent"), "SW": PV(name + ":getSWState"), "Vlim": PV(name + ":getVoltageLimit"), "Ilim": PV(name + ":getCurrentLimit"), "ilock": PV(name + ":getInterlock"), "FR": PV(name + ":getFullRange"), "PS": PV(name + ":getPSUState"), "Hz": PV(name + ":getFrequency")}
 
+        # make the set PVs equal to the get PVs at initialization:
+        self.read()
+        for key in self.setPVs:
+            self.setPVs[key].put(self.getPVs[key])
+
         self.epicsRunning = PV(name + ":isRunning")
         self.epicsRunning.put("YES")
 
