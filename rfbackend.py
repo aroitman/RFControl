@@ -42,7 +42,7 @@ class RFBackend:
         # make the set PVs equal to the get PVs at initialization:
         self.read()
         for key in self.setPVs:
-            self.setPVs[key].put(self.getPVs[key])
+            self.setPVs[key].put(self.getPVs[key].get())
 
         self.epicsRunning = PV(name + ":isRunning")
         self.epicsRunning.put("YES")
