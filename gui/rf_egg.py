@@ -43,7 +43,7 @@ t1_c.new_autorow()
 t1_c.place_object(egg.gui.Label("Current (A):"))
 setIsb = t1_c.place_object(QtWidgets.QDoubleSpinBox(maximum=100000))
 t1_c.new_autorow()
-t1_c.place_object(egg.gui.Label("Frequency (Hz):"))
+t1_c.place_object(egg.gui.Label("Frequency (MHz):"))
 setHzsb = t1_c.place_object(QtWidgets.QDoubleSpinBox(maximum=100000))
 t1_c.new_autorow()
 t1_c.place_object(egg.gui.Label("RF PS Status:"))
@@ -76,8 +76,8 @@ def updateSBs(**kw):
 
 
 updateSBs()
-for keys in pvs:
-    pvs[keys].add_callback(updateSBs)
+#for keys in pvs:
+#    pvs[keys].add_callback(updateSBs)
 
 
 def updatePVs():
