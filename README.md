@@ -1,6 +1,11 @@
 # RFControl
 
-A Python interface for our RF Power Supply and our RF Switch.
+A Python Interface for CGC Instruments' Double Power Supply Unit and the radio-frequency AMX Switch.
+
+Power Supply: https://www.cgc-instruments.com/en/Products/Power-Supplies/19PSU/Modules/PSU-CTRL-2D
+
+Switch: https://www.cgc-instruments.com/en/Products/Switches/19AMX/Modules/AMX-CTRL-4ED
+
 
 
 ## Description of Files
@@ -9,11 +14,12 @@ A Python interface for our RF Power Supply and our RF Switch.
 - `RF.template` EPICS PV template folder which you can use to create the EPICS PVs needed for the backend
 
 ## How to use
+### EPICS Backend
 To start the EPICS backend, from the project directory, run
 ```
 python3 rfbackend.py
 ```
-Make sure you have the EPICS variables defined beforehand. Put the provided template file in the respective folder in your EPICS setup. Then, in the substitutions folder, input the following:
+Make sure you have the EPICS variables defined beforehand. Put the provided RF template file in your EPICS template directory. Then, in the substitutions file, input the following:
 ```
 file "/path/to/RF.template" { pattern
 {P, R, PREC}
@@ -22,5 +28,10 @@ file "/path/to/RF.template" { pattern
 ```
 Or you can manually define the PVs if you wish.
 
-## To Be Implemented
-- GUI
+### GUI
+once the EPICS backend is started, open up another terminal window, go to the main project directory, and run
+```
+cd gui
+python3 rf_egg.py
+```
+Now, you can control both the power supply and the switch through a GUI.
