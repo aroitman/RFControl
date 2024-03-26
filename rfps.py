@@ -3,9 +3,9 @@ import ctypes
 
 # Define power supply class to interface with the dll
 class RFPS:
-    def __init__(self, PortNumber, COMNumber):
+    def __init__(self, PortNumber, COMNumber, libpath):
         #self.libpath = os.path.abspath("COM-HVPSU2D.dll")
-        self.libpath = "C:/ControlSoftware/PSU-CTRL-2D_1-01/x64/COM-HVPSU2D.dll"
+        self.libpath = libpath
         self.RFPS = ctypes.cdll.LoadLibrary(self.libpath)
         self.PortNumber = PortNumber  # port used for power supply, usually 0
         self.COMNumber = COMNumber  # COM port number, which depends on where PS is connected.

@@ -3,9 +3,9 @@ import ctypes
 
 # Define switch class to interface with the dll
 class RFSwitch:
-    def __init__(self, PortNumber, COMNumber):
+    def __init__(self, PortNumber, COMNumber, libpath):
         #self.libpath = os.path.abspath("COM-HVAMX4ED.dll")
-        self.libpath = "C:/ControlSoftware/COM-HVAMX4ED_1-01/x64/COM-HVAMX4ED.dll"
+        self.libpath = libpath 
         self.RFSwitch = ctypes.cdll.LoadLibrary(self.libpath)  # load library
         self.PortNumber = PortNumber  # port used for RF switch, usually 0
         self.COMNumber = COMNumber  # COM port number, which depends on where switch is connected.

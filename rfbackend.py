@@ -1,9 +1,10 @@
 from queue import Queue
 from epics import PV
 import time
+from . import config
 
 # dummy mode for testing
-mode = "real"
+mode = "dummy"
 if mode == "real":
     import rfps
     import rfswitch
@@ -18,12 +19,12 @@ class RFBackend:
         self.SWCOMNumber = SWCOMNumber
         if mode == "real":
             # initialize PS wrapper
-            self.rfps = rfps.RFPS(self.PSPortNumber, self.PSCOMNumber)
+            self.rfps = rfps.RFPS(self.PSPortNumber, self.PSCOMNumber, config.ps_loc)
             self.rfps.open()
             self.rfps.setup()
 
             # initialize switch wrapper
-            self.rfswitch = rfswitch.RFSwitch(self.SWPortNumber, self.SWCOMNumber)
+            self.rfswitch = rfswitch.RFSwitch(self.SWPortNumber, self.SWCOMNumber, config.switch_loc)
             self.rfswitch.open()
             self.rfswitch.setup()
 
@@ -40,7 +41,8 @@ class RFBackend:
         self.getPVs = {"V": PV(name + ":getVoltage"), "I": PV(name + ":getCurrent"), "SW": PV(name + ":getSWState"), "Vlim": PV(name + ":getVoltageLimit"), "Ilim": PV(name + ":getCurrentLimit"), "ilock": PV(name + ":getInterlock"), "FR": PV(name + ":getFullRange"), "PS": PV(name + ":getPSUState"), "Hz": PV(name + ":getFrequency")}
 
         # make the set PVs equal to the get PVs at initialization:
-        self.read()
+        if mode == "real":
+            self.read()
         for key in self.setPVs:
             self.setPVs[key].put(self.getPVs[key].get())
 
@@ -89,10 +91,11 @@ class RFBackend:
                         self.epicsMatches.put("YES")
                         print("Currently in dummy mode. Set variables changed. Request received:", request)
         except KeyboardInterrupt:
-            self.rfps.shutdown()
-            self.rfps.close()
-            self.rfswitch.shutdown()
-            self.rfswitch.close()
+            if mode == "real":
+                self.rfps.shutdown()
+                self.rfps.close()
+                self.rfswitch.shutdown()
+                self.rfswitch.close()
 
     def read(self):
         self.getPVs["V"].put(self.rfps.get_output_voltage(0))
@@ -166,4 +169,4 @@ class RFBackend:
 
 
 if __name__ == "__main__":
-    rfb = RFBackend("Beamline:RF", 0, 6, 0, 5)
+    rfb = RFBackend("Beamline:RFTest", config.ps_port, config.ps_com, config.switch_port, config.switch_com)
