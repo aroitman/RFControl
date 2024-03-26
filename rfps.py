@@ -1,8 +1,10 @@
 import ctypes
 
 
-# Define power supply class to interface with the dll
 class RFPS:
+    """
+    Power supply class to interface with the dll
+    """
     def __init__(self, PortNumber, COMNumber, libpath):
         #self.libpath = os.path.abspath("COM-HVPSU2D.dll")
         self.libpath = libpath
@@ -61,7 +63,6 @@ class RFPS:
         self.RFPS.COM_HVPSU2D_GetPSUOutputVoltage(self.PortNumber, PSU, voltage)
         return voltage.contents.value
 
-    # sets current for both PSUs
     def set_output_voltage(self, voltage):
         voltage = ctypes.c_double(voltage)
         self.RFPS.COM_HVPSU2D_SetPSUOutputVoltage(self.PortNumber, 0, voltage)
@@ -73,7 +74,6 @@ class RFPS:
         self.RFPS.COM_HVPSU2D_GetPSUOutputCurrent(self.PortNumber, PSU, current)
         return current.contents.value
 
-    # sets current for both PSUs
     def set_output_current(self, current):
         current = ctypes.c_double(current)
         self.RFPS.COM_HVPSU2D_SetPSUOutputCurrent(self.PortNumber, 0, current)

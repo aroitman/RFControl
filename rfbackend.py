@@ -11,6 +11,9 @@ if mode == "real":
 
 
 class RFBackend:
+    """
+    Class for RF backend. This controls and monitors both the switch and the power supply by using a Queue.
+    """
     def __init__(self, name, PSPortNumber, PSCOMNumber, SWPortNumber, SWCOMNumber):
         # initialize ps wrapper
         self.PSPortNumber = PSPortNumber
@@ -128,8 +131,10 @@ class RFBackend:
     def setHzChanged(self, **kw):
         self.sendQueue.put("Hz")
 
-    # helper function to change ps state
     def ps_change_state(self, state):
+        """
+        helper function to change the power supply state
+        """
         if state == 1:
             self.rfps.setup()
             return 1
@@ -137,8 +142,10 @@ class RFBackend:
             self.rfps.shutdown()
             return 0
 
-    # helper function to set voltage safely
     def safe_set_output_voltage(self, voltage):
+        """
+        helper function to set voltage safely
+        """
         self.rfswitch.set_controller_config(0)
         self.rfps.set_output_voltage(voltage)
         self.rfswitch.set_controller_config(7)
@@ -146,6 +153,9 @@ class RFBackend:
 
     # function to safely set variables
     def set_value(self, request):
+        """
+        function to safely set variables
+        """
         if request == "SW":
             # need to have an integer for the switch state, 0 or 7
             self.received_setPVs[request] = int(self.setPVs[request].get())
@@ -169,4 +179,4 @@ class RFBackend:
 
 
 if __name__ == "__main__":
-    rfb = RFBackend("Beamline:RFTest", config.ps_port, config.ps_com, config.switch_port, config.switch_com)
+    rfb = RFBackend(config.epics_prefix, config.ps_port, config.ps_com, config.switch_port, config.switch_com)

@@ -1,4 +1,3 @@
-# RFControl
 
 A Python Interface for CGC Instruments' Double Power Supply Unit and the radio-frequency AMX Switch.
 
@@ -24,7 +23,7 @@ You will also need the DLLs for the CGC power supply and switch, make a note of 
 Finally, clone this repository.
 ## How to use
 ### Config
-Edit the `config.py` file and input the location of the power supply dll and switch dll for the `ps_loc` and `switch_loc` variables, respectively. Also, specify which comm ports to use for the power supply and the switch with the `ps_com` and `switch_com` variables, respectively. 
+Edit the `config.py` file and input the location of the power supply dll and switch dll for the `ps_loc` and `switch_loc` variables, respectively. Next, specify which comm ports to use for the power supply and the switch with the `ps_com` and `switch_com` variables, respectively. Set the prefix to use for your EPICS PVs with the `epics_prefix` variable. 
 
 
 ### Start the Backend
