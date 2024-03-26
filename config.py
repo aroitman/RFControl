@@ -10,5 +10,5 @@ switch_port = 0
 """switch port, 0 by default"""
 switch_com = 5
 """power supply COM port"""
-epics_prefix = "Beamline:RF:"
+epics_prefix = "Beamline:RF"
 """Prefix for EPICS PVs"""
