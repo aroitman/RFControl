@@ -1,8 +1,10 @@
 import ctypes
 
 
-# Define switch class to interface with the dll
 class RFSwitch:
+    """
+    Switch class to interface with the dll
+    """
     def __init__(self, PortNumber, COMNumber, libpath):
         #self.libpath = os.path.abspath("COM-HVAMX4ED.dll")
         self.libpath = libpath 
@@ -23,8 +25,10 @@ class RFSwitch:
     def load_current_config(self, config_number):
         self.RFSwitch.COM_HVAMX4ED_LoadCurrentConfig(self.PortNumber, config_number - 1)
 
-    # see whether the switch is on or off, 7 means on, 0 means off.
     def get_controller_state(self):
+        """
+        see whether the switch is on of off, 7 means on, 0 means off
+        """
         state = ctypes.pointer(ctypes.c_byte(0))
         self.RFSwitch.COM_HVAMX4ED_GetControllerState(self.PortNumber, state)
         return state.contents.value
@@ -34,8 +38,10 @@ class RFSwitch:
         self.RFSwitch.COM_HVAMX4ED_SetControllerConfig(self.PortNumber, config)
         return self.get_controller_state()
 
-    # get list of configuration file names and numbers
     def get_config_list(self):
+        """
+        get a list of configuration file names and numbers
+        """
         activetype = ctypes.c_bool * 126
         validtype = ctypes.c_bool * 126
         active = activetype()
@@ -55,7 +61,9 @@ class RFSwitch:
         return (active_nums, valid_nums, config_name_dict)
 
     def get_oscillator_frequency(self):
-        # get oscillator frequency in MHz
+        """
+        get oscillator frequency in MHz
+        """
         period = ctypes.pointer(ctypes.c_int(0))
         self.RFSwitch.COM_HVAMX4ED_GetOscillatorPeriod(self.PortNumber, period)
         # convert period to proper format and then to frequency
@@ -64,7 +72,9 @@ class RFSwitch:
         return freq
 
     def set_oscillator_frequency(self, freq):
-        # set oscillator frequency in MHz, and do the other steps in the lablog
+        """
+        set oscillator frequency in MHz.
+        """
         # convert frequency to period into units of 10 ns
         period = round(100 / freq)
         # subtract two for proper input format

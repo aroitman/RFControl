@@ -29,8 +29,10 @@
 <pre><code class="python">import ctypes
 
 
-# Define switch class to interface with the dll
 class RFSwitch:
+    &#34;&#34;&#34;
+    Switch class to interface with the dll
+    &#34;&#34;&#34;
     def __init__(self, PortNumber, COMNumber, libpath):
         #self.libpath = os.path.abspath(&#34;COM-HVAMX4ED.dll&#34;)
         self.libpath = libpath 
@@ -51,8 +53,10 @@ class RFSwitch:
     def load_current_config(self, config_number):
         self.RFSwitch.COM_HVAMX4ED_LoadCurrentConfig(self.PortNumber, config_number - 1)
 
-    # see whether the switch is on or off, 7 means on, 0 means off.
     def get_controller_state(self):
+        &#34;&#34;&#34;
+        see whether the switch is on of off, 7 means on, 0 means off
+        &#34;&#34;&#34;
         state = ctypes.pointer(ctypes.c_byte(0))
         self.RFSwitch.COM_HVAMX4ED_GetControllerState(self.PortNumber, state)
         return state.contents.value
@@ -62,8 +66,10 @@ class RFSwitch:
         self.RFSwitch.COM_HVAMX4ED_SetControllerConfig(self.PortNumber, config)
         return self.get_controller_state()
 
-    # get list of configuration file names and numbers
     def get_config_list(self):
+        &#34;&#34;&#34;
+        get a list of configuration file names and numbers
+        &#34;&#34;&#34;
         activetype = ctypes.c_bool * 126
         validtype = ctypes.c_bool * 126
         active = activetype()
@@ -83,7 +89,9 @@ class RFSwitch:
         return (active_nums, valid_nums, config_name_dict)
 
     def get_oscillator_frequency(self):
-        # get oscillator frequency in MHz
+        &#34;&#34;&#34;
+        get oscillator frequency in MHz
+        &#34;&#34;&#34;
         period = ctypes.pointer(ctypes.c_int(0))
         self.RFSwitch.COM_HVAMX4ED_GetOscillatorPeriod(self.PortNumber, period)
         # convert period to proper format and then to frequency
@@ -92,7 +100,9 @@ class RFSwitch:
         return freq
 
     def set_oscillator_frequency(self, freq):
-        # set oscillator frequency in MHz, and do the other steps in the lablog
+        &#34;&#34;&#34;
+        set oscillator frequency in MHz.
+        &#34;&#34;&#34;
         # convert frequency to period into units of 10 ns
         period = round(100 / freq)
         # subtract two for proper input format
@@ -150,12 +160,15 @@ if __name__ == &#34;__main__&#34;:
 <span>(</span><span>PortNumber, COMNumber, libpath)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Switch class to interface with the dll</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class RFSwitch:
+    &#34;&#34;&#34;
+    Switch class to interface with the dll
+    &#34;&#34;&#34;
     def __init__(self, PortNumber, COMNumber, libpath):
         #self.libpath = os.path.abspath(&#34;COM-HVAMX4ED.dll&#34;)
         self.libpath = libpath 
@@ -176,8 +189,10 @@ if __name__ == &#34;__main__&#34;:
     def load_current_config(self, config_number):
         self.RFSwitch.COM_HVAMX4ED_LoadCurrentConfig(self.PortNumber, config_number - 1)
 
-    # see whether the switch is on or off, 7 means on, 0 means off.
     def get_controller_state(self):
+        &#34;&#34;&#34;
+        see whether the switch is on of off, 7 means on, 0 means off
+        &#34;&#34;&#34;
         state = ctypes.pointer(ctypes.c_byte(0))
         self.RFSwitch.COM_HVAMX4ED_GetControllerState(self.PortNumber, state)
         return state.contents.value
@@ -187,8 +202,10 @@ if __name__ == &#34;__main__&#34;:
         self.RFSwitch.COM_HVAMX4ED_SetControllerConfig(self.PortNumber, config)
         return self.get_controller_state()
 
-    # get list of configuration file names and numbers
     def get_config_list(self):
+        &#34;&#34;&#34;
+        get a list of configuration file names and numbers
+        &#34;&#34;&#34;
         activetype = ctypes.c_bool * 126
         validtype = ctypes.c_bool * 126
         active = activetype()
@@ -208,7 +225,9 @@ if __name__ == &#34;__main__&#34;:
         return (active_nums, valid_nums, config_name_dict)
 
     def get_oscillator_frequency(self):
-        # get oscillator frequency in MHz
+        &#34;&#34;&#34;
+        get oscillator frequency in MHz
+        &#34;&#34;&#34;
         period = ctypes.pointer(ctypes.c_int(0))
         self.RFSwitch.COM_HVAMX4ED_GetOscillatorPeriod(self.PortNumber, period)
         # convert period to proper format and then to frequency
@@ -217,7 +236,9 @@ if __name__ == &#34;__main__&#34;:
         return freq
 
     def set_oscillator_frequency(self, freq):
-        # set oscillator frequency in MHz, and do the other steps in the lablog
+        &#34;&#34;&#34;
+        set oscillator frequency in MHz.
+        &#34;&#34;&#34;
         # convert frequency to period into units of 10 ns
         period = round(100 / freq)
         # subtract two for proper input format
@@ -272,12 +293,15 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">get_config_list</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>get a list of configuration file names and numbers</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_config_list(self):
+    &#34;&#34;&#34;
+    get a list of configuration file names and numbers
+    &#34;&#34;&#34;
     activetype = ctypes.c_bool * 126
     validtype = ctypes.c_bool * 126
     active = activetype()
@@ -301,12 +325,15 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">get_controller_state</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>see whether the switch is on of off, 7 means on, 0 means off</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_controller_state(self):
+    &#34;&#34;&#34;
+    see whether the switch is on of off, 7 means on, 0 means off
+    &#34;&#34;&#34;
     state = ctypes.pointer(ctypes.c_byte(0))
     self.RFSwitch.COM_HVAMX4ED_GetControllerState(self.PortNumber, state)
     return state.contents.value</code></pre>
@@ -316,13 +343,15 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">get_oscillator_frequency</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>get oscillator frequency in MHz</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_oscillator_frequency(self):
-    # get oscillator frequency in MHz
+    &#34;&#34;&#34;
+    get oscillator frequency in MHz
+    &#34;&#34;&#34;
     period = ctypes.pointer(ctypes.c_int(0))
     self.RFSwitch.COM_HVAMX4ED_GetOscillatorPeriod(self.PortNumber, period)
     # convert period to proper format and then to frequency
@@ -376,13 +405,15 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">set_oscillator_frequency</span></span>(<span>self, freq)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>set oscillator frequency in MHz.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_oscillator_frequency(self, freq):
-    # set oscillator frequency in MHz, and do the other steps in the lablog
+    &#34;&#34;&#34;
+    set oscillator frequency in MHz.
+    &#34;&#34;&#34;
     # convert frequency to period into units of 10 ns
     period = round(100 / freq)
     # subtract two for proper input format

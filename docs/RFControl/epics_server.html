@@ -34,7 +34,7 @@ from epics import PV
 from . import config
 
 start_time = time.time()
-prefix = config.epics_prefix
+prefix = config.epics_prefix + &#34;:&#34;
 pvdb = {&#39;setVoltage&#39;:{&#39;prec&#39;:10}, &#39;setCurrent&#39;:{&#39;prec&#39;:10}, &#39;setFrequency&#39;:{&#39;prec&#39;:10}, &#39;setPSState&#39;:{&#39;prec&#39;:10}, &#39;setSWState&#39;:{&#39;prec&#39;:10}, &#39;getVoltage&#39;:{&#39;prec&#39;:10}, &#39;getCurrent&#39;:{&#39;prec&#39;:10}, &#39;getFrequency&#39;:{&#39;prec&#39;:10}, &#39;getVoltageLimit&#39;:{&#39;prec&#39;:10}, &#39;getCurrentLimit&#39;:{&#39;prec&#39;:10}, &#39;getSWState&#39;:{&#39;prec&#39;:10}, &#39;getInterlock&#39;:{&#39;type&#39;:&#39;enum&#39;, &#34;enums&#34;:[&#34;OFF&#34;, &#34;ON&#34;]}, &#39;getFullRange&#39;:{&#39;type&#39;:&#39;enum&#39;, &#39;enums&#39;:[&#39;OFF&#39;, &#39;ON&#39;]}, &#39;getPSUState&#39;:{&#39;type&#39;:&#39;enum&#39;, &#39;enums&#39;:[&#39;OFF&#39;, &#39;ON&#39;]}, &#39;isRunning&#39;:{&#39;type&#39;:&#39;enum&#39;, &#39;enums&#39;:[&#39;NO&#39;, &#39;YES&#39;], &#39;scan&#39;:0.1 }, &#39;isMatching&#39;:{&#39;type&#39;:&#39;enum&#39;, &#39;enums&#39;:[&#39;NO&#39;, &#39;YES&#39;], &#39;scan&#39;:0.1}}
 
 class myDriver(Driver):

@@ -70,7 +70,6 @@ class RFBackend:
 
         # Initialize EPICS get PVs as dictionary (PVs read from RF switch and ps)
         self.getPVs = {&#34;V&#34;: PV(name + &#34;:getVoltage&#34;), &#34;I&#34;: PV(name + &#34;:getCurrent&#34;), &#34;SW&#34;: PV(name + &#34;:getSWState&#34;), &#34;Vlim&#34;: PV(name + &#34;:getVoltageLimit&#34;), &#34;Ilim&#34;: PV(name + &#34;:getCurrentLimit&#34;), &#34;ilock&#34;: PV(name + &#34;:getInterlock&#34;), &#34;FR&#34;: PV(name + &#34;:getFullRange&#34;), &#34;PS&#34;: PV(name + &#34;:getPSUState&#34;), &#34;Hz&#34;: PV(name + &#34;:getFrequency&#34;)}
-
         # make the set PVs equal to the get PVs at initialization:
         if mode == &#34;real&#34;:
             self.read()
@@ -261,7 +260,6 @@ if __name__ == &#34;__main__&#34;:
 
         # Initialize EPICS get PVs as dictionary (PVs read from RF switch and ps)
         self.getPVs = {&#34;V&#34;: PV(name + &#34;:getVoltage&#34;), &#34;I&#34;: PV(name + &#34;:getCurrent&#34;), &#34;SW&#34;: PV(name + &#34;:getSWState&#34;), &#34;Vlim&#34;: PV(name + &#34;:getVoltageLimit&#34;), &#34;Ilim&#34;: PV(name + &#34;:getCurrentLimit&#34;), &#34;ilock&#34;: PV(name + &#34;:getInterlock&#34;), &#34;FR&#34;: PV(name + &#34;:getFullRange&#34;), &#34;PS&#34;: PV(name + &#34;:getPSUState&#34;), &#34;Hz&#34;: PV(name + &#34;:getFrequency&#34;)}
-
         # make the set PVs equal to the get PVs at initialization:
         if mode == &#34;real&#34;:
             self.read()
