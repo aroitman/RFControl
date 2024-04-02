@@ -4,7 +4,7 @@ import time
 import config
 
 # dummy mode for testing
-mode = "dummy"
+mode = "real"
 if mode == "real":
     import rfps
     import rfswitch
