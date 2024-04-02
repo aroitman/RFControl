@@ -1,9 +1,9 @@
 
 A Python Interface for CGC Instruments' Double Power Supply Unit and the radio-frequency AMX Switch.
 
-Power Supply: https://www.cgc-instruments.com/en/Products/Power-Supplies/19PSU/Modules/PSU-CTRL-2D
+Power Supply: https://www.cgc-instruments.com/PSU-CTRL-2D
 
-Switch: https://www.cgc-instruments.com/en/Products/Switches/19AMX/Modules/AMX-CTRL-4ED
+Switch: https://www.cgc-instruments.com/AMX-CTRL-4ED
 
 ## Installation
 Currently, only Windows is supported.
@@ -43,7 +43,7 @@ cd to the `gui` folder and run
 ```
 python rf_egg.py
 ```
-This gui can be run on any computer connected to the same subnetwork as the EPICS server. Further documentation about the functions used to control and monitor the RF switch and power supply can be found in the `docs` directory.
+This gui can be run on any computer connected to the same subnetwork as the EPICS server. Further documentation about the functions used to control and monitor the RF switch and power supply can be found in the `docs` directory or at https://aroitman.github.io/RFControl/.
 
 ## Description of Files and Folders
 - `rfps.py, rfswitch.py` Python DLL wrappers for power supply and switch, respectively.
