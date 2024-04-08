@@ -23,8 +23,8 @@
 </header>
 <section id="section-intro">
 <p>A Python Interface for CGC Instruments' Double Power Supply Unit and the radio-frequency AMX Switch.</p>
-<p>Power Supply: <a href="https://www.cgc-instruments.com/en/Products/Power-Supplies/19PSU/Modules/PSU-CTRL-2D">https://www.cgc-instruments.com/en/Products/Power-Supplies/19PSU/Modules/PSU-CTRL-2D</a></p>
-<p>Switch: <a href="https://www.cgc-instruments.com/en/Products/Switches/19AMX/Modules/AMX-CTRL-4ED">https://www.cgc-instruments.com/en/Products/Switches/19AMX/Modules/AMX-CTRL-4ED</a></p>
+<p>Power Supply: <a href="https://www.cgc-instruments.com/PSU-CTRL-2D">https://www.cgc-instruments.com/PSU-CTRL-2D</a></p>
+<p>Switch: <a href="https://www.cgc-instruments.com/AMX-CTRL-4ED">https://www.cgc-instruments.com/AMX-CTRL-4ED</a></p>
 <h2 id="installation">Installation</h2>
 <p>Currently, only Windows is supported.</p>
 <p>Install <a href="https://anaconda.com">Anaconda</a>. Open the anaconda prompt and install the needed dependencies with the following commands:</p>
@@ -36,7 +36,9 @@ conda install pip
 pip install spinmob
 </code></pre>
 <p>You will also need the DLLs for the CGC power supply and switch, make a note of their file locations.</p>
-<p>Finally, clone this repository.</p>
+<p>Finally, clone the repository by running</p>
+<pre><code>git clone https://github.com/aroitman/RFControl
+</code></pre>
 <h2 id="how-to-use">How to use</h2>
 <h3 id="config">Config</h3>
 <p>Edit the <code>config.py</code> file and input the location of the power supply dll and switch dll for the <code>ps_loc</code> and <code>switch_loc</code> variables, respectively. Next, specify which comm ports to use for the power supply and the switch with the <code>ps_com</code> and <code>switch_com</code> variables, respectively. Set the prefix to use for your EPICS PVs with the <code>epics_prefix</code> variable. </p>
@@ -51,7 +53,7 @@ pip install spinmob
 <p>cd to the <code>gui</code> folder and run</p>
 <pre><code>python rf_egg.py
 </code></pre>
-<p>This gui can be run on any computer connected to the same subnetwork as the EPICS server. Further documentation about the functions used to control and monitor the RF switch and power supply can be found in the <code>docs</code> directory.</p>
+<p>This gui can be run on any computer connected to the same subnetwork as the EPICS server. Further documentation about the functions used to control and monitor the RF switch and power supply can be found in the <code>docs</code> directory or at <a href="https://aroitman.github.io/RFControl/.">https://aroitman.github.io/RFControl/.</a></p>
 <h2 id="description-of-files-and-folders">Description of Files and Folders</h2>
 <ul>
 <li><code>rfps.py, rfswitch.py</code> Python DLL wrappers for power supply and switch, respectively.</li>
@@ -105,7 +107,7 @@ __pdoc__ = {&#39;gui&#39;:False}</code></pre>
 </article>
 <nav id="sidebar">
 <header>
-<a class="homelink" rel="home" title="pdoc Home" href="https://aroitman.github.io/RFControl/index.html">
+<a class="homelink" rel="home" title="RFControl Home" href="https://aroitman.github.io/RFControl/index.html">
 <img src="logo.svg" alt=""> RFControl
 </a>
 </header>
